@@ -109,8 +109,8 @@
     const label=document.createElement("span"); label.textContent="🌐 ";
     const select=document.createElement("select"); select.id="site-language";
     select.style.cssText="background:transparent;color:#fff;border:0;outline:0;font:inherit;cursor:pointer";
-    Object.entries(LANGS).forEach(([k,v])=>{const o=document.createElement("option");o.value=k;o.textContent=v.name;select.appendChild(o);});
-    select.addEventListener("change",()=>{localStorage.setItem("site-language",select.value);apply(select.value,window.__siteCountry||null,true);});
+    const autoOption=document.createElement("option"); autoOption.value="auto"; autoOption.textContent="Auto"; select.appendChild(autoOption); Object.entries(LANGS).forEach(([k,v])=>{const o=document.createElement("option");o.value=k;o.textContent=v.name;select.appendChild(o);});
+    select.addEventListener("change",async()=>{if(select.value==="auto"){localStorage.setItem("site-language","auto");const c=await detectCountry();const code=(c.country_code||"").toUpperCase();const cfg=COUNTRY[code];apply((cfg&&LANGS[cfg.lang])?cfg.lang:browserLang(),c,false);}else{localStorage.setItem("site-language",select.value);apply(select.value,window.__siteCountry||null,true);}});
     box.append(label,select); document.body.appendChild(box); return box;
   }
 
@@ -125,6 +125,17 @@
     const c=COUNTRY[country.country_code]||{};
     const city=country.city?country.city+", ":"";
     badge.textContent=(c.flag||"🌐")+" "+city+(country.country||c.region||"")+" · "+(LANGS[lang]?.name||lang);
+  }
+
+  function addRegionalPanel(country,lang){
+    if(!country || !country.country) return;
+    let p=document.querySelector("[data-regional-panel]");
+    if(!p){p=document.createElement("aside");p.setAttribute("data-regional-panel","true");p.style.cssText="position:fixed;left:18px;bottom:64px;z-index:99997;background:rgba(23,23,22,.96);color:#f4f0e8;padding:10px 13px;border:1px solid rgba(185,154,98,.45);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.22);font:500 11px/1.45 system-ui,sans-serif;max-width:290px;backdrop-filter:blur(10px)";document.body.appendChild(p);}
+    const c=COUNTRY[(country.country_code||"").toUpperCase()]||{};
+    const currency=(c.currency||country.currency?.code||"—");
+    const tz=(c.tz||country.timezone?.id||"—");
+    let localTime="—"; try{localTime=new Intl.DateTimeFormat(c.locale||LANGS[lang].locale,{dateStyle:"medium",timeStyle:"short",timeZone:tz}).format(new Date());}catch(e){}
+    p.innerHTML="<strong>"+(UI[lang]?.regional||"Regional experience")+"</strong><br>"+(c.flag||"🌐")+" "+(country.city?country.city+", ":"")+(country.country||c.region||"")+"<br>"+currency+" · "+tz+"<br>"+localTime;
   }
 
   function translateNav(lang){
@@ -165,8 +176,8 @@
     translateNav(lang);
     regionalize(country&&country.country_code);
     const selector=ensureSelector().querySelector("select");
-    if(selector) selector.value=lang;
-    addRegionBadge(country,lang);
+    if(selector) selector.value=(manual?lang:"auto");
+    addRegionBadge(country,lang); addRegionalPanel(country,lang);
     window.dispatchEvent(new CustomEvent("site-localized",{detail:{lang,country}}));
   }
 
@@ -180,7 +191,7 @@
     const code=(country.country_code||"").toUpperCase();
     const cfg=COUNTRY[code];
     const lang=(saved && saved!=="auto" && LANGS[saved])?saved:((cfg&&LANGS[cfg.lang])?cfg.lang:browserLang());
-    apply(lang,country,false);
+    apply(lang,country,!!(saved && saved!=="auto" && LANGS[saved]));
 
     // Expose locale data for future country-specific modules and editable content.
     window.SiteLocalization={
