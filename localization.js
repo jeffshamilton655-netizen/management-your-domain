@@ -127,16 +127,7 @@
     badge.textContent=(c.flag||"🌐")+" "+city+(country.country||c.region||"")+" · "+(LANGS[lang]?.name||lang);
   }
 
-  function addRegionalPanel(country,lang){
-    if(!country || !country.country) return;
-    let p=document.querySelector("[data-regional-panel]");
-    if(!p){p=document.createElement("aside");p.setAttribute("data-regional-panel","true");p.style.cssText="position:fixed;left:18px;bottom:64px;z-index:99997;background:rgba(23,23,22,.96);color:#f4f0e8;padding:10px 13px;border:1px solid rgba(185,154,98,.45);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.22);font:500 11px/1.45 system-ui,sans-serif;max-width:290px;backdrop-filter:blur(10px)";document.body.appendChild(p);}
-    const c=COUNTRY[(country.country_code||"").toUpperCase()]||{};
-    const currency=(c.currency||country.currency?.code||"—");
-    const tz=(c.tz||country.timezone?.id||"—");
-    let localTime="—"; try{localTime=new Intl.DateTimeFormat(c.locale||LANGS[lang].locale,{dateStyle:"medium",timeStyle:"short",timeZone:tz}).format(new Date());}catch(e){}
-    p.innerHTML="<strong>"+(UI[lang]?.regional||"Regional experience")+"</strong><br>"+(c.flag||"🌐")+" "+(country.city?country.city+", ":"")+(country.country||c.region||"")+"<br>"+currency+" · "+tz+"<br>"+localTime;
-  }
+  function addRegionalPanel(country,lang){ return; }
 
   function translateNav(lang){
     const t=UI[lang]||UI.en;
