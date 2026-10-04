@@ -1,0 +1,41 @@
+name: Restore website links
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'index.html'
+      - '.github/workflows/fix-links.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore intended link destinations
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from bs4 import BeautifulSoup
+          p=Path('index.html')
+          soup=BeautifulSoup(p.read_text(encoding='utf-8'),'html.parser')
+          repl={
+            'Skip to content':'#main','MANAGEMENT':'#home','Home':'#home','About the Artist':'#about','Media / Gallery':'#media','Explore':'#explore','Management':'#management','Contact':'#contact',
+            'Spotify Official website ↗':'https://open.spotify.com/','YouTube Music Official website ↗':'https://music.youtube.com/','Apple Music Official website ↗':'https://www.apple.com/apple-music/','SoundCloud Official website ↗':'https://soundcloud.com/','B Billboard Official website ↗':'https://www.billboard.com/','RS Rolling Stone Music ↗':'https://www.rollingstone.com/music/','Pitchfork News ↗':'https://pitchfork.com/news/','Variety Music ↗':'https://variety.com/v/music/','ET Entertainment Tonight Celebrity news ↗':'https://www.etonline.com/','P People Celebrity news ↗':'https://people.com/','EW Entertainment Weekly Entertainment news ↗':'https://ew.com/','E! E! News Celebrity & pop culture ↗':'https://www.eonline.com/','THR The Hollywood Reporter Entertainment industry ↗':'https://www.hollywoodreporter.com/','NTA NTA Entertainment Nigerian entertainment news ↗':'https://www.nta.ng/news/entertainment/'
+          }
+          for a in soup.find_all('a'):
+            t=' '.join(a.get_text(' ',strip=True).split())
+            if t in repl:
+              a['href']=repl[t]
+              if t.endswith('↗'):
+                a['target']='_blank'
+                a['rel']='noopener noreferrer'
+          p.write_text(str(soup),encoding='utf-8')
+          PY
+      - name: Commit link fix
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Restore website link destinations'
+          git push
