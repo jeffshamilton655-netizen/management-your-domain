@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<title>Puller Chat — Live Preview</title>
+<style>
+:root{--bg:#070b14;--panel:#0d1422;--panel2:#111a2b;--line:#1d2a3d;--text:#eef4ff;--muted:#91a0b7;--accent:#5b8cff;--accent2:#7c5cff;--green:#32d583}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 70% 10%,#17264a 0,transparent 35%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100vh;overflow:hidden}
+.app{display:grid;grid-template-columns:310px 1fr;max-width:1500px;height:100vh;margin:auto;background:rgba(7,11,20,.88)}
+.sidebar{border-right:1px solid var(--line);background:rgba(10,16,27,.94);display:flex;flex-direction:column}
+.brand{padding:25px 22px 20px;display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:900;box-shadow:0 10px 30px #3559bd44}.brand b{font-size:20px}.brand small{display:block;color:var(--muted);margin-top:2px}
+.search{margin:0 16px 16px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;color:var(--muted)}
+.tabs{display:flex;gap:6px;padding:0 16px 15px}.tab{border:0;background:transparent;color:var(--muted);padding:8px 12px;border-radius:9px}.tab.active{background:#18243a;color:#fff}
+.chats{overflow:auto;padding:0 10px}.chat{display:flex;gap:12px;padding:13px 10px;border-radius:12px;cursor:pointer}.chat.active{background:#152137}.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#334a76,#6e5bd3);display:grid;place-items:center;font-weight:800;flex:0 0 auto}.online:after{content:"";width:10px;height:10px;background:var(--green);border:2px solid var(--panel);border-radius:50%;position:absolute;margin:30px 0 0 -11px}.chat h4{margin:0 0 4px;font-size:14px}.chat p{margin:0;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}.time{margin-left:auto;color:#708099;font-size:11px}
+.profile{margin-top:auto;padding:14px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}.profile .avatar{width:38px;height:38px}.gear{margin-left:auto;color:var(--muted)}
+.main{display:grid;grid-template-rows:72px 1fr 82px;min-width:0;background:linear-gradient(180deg,#0c1422,#080e18)}
+.header{border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:12px}.header h3{margin:0;font-size:16px}.header small{color:var(--green)}.actions{margin-left:auto;display:flex;gap:8px}.icon{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:#d8e3f5;display:grid;place-items:center}
+.messages{padding:28px 7%;overflow:auto}.day{text-align:center;color:#6f7f97;font-size:11px;margin:5px 0 24px}.row{display:flex;gap:10px;margin:14px 0}.row.me{justify-content:flex-end}.bubble{max-width:min(620px,78%);padding:12px 15px;border-radius:16px;background:#151f31;border:1px solid #203049;box-shadow:0 5px 20px #0002}.me .bubble{background:linear-gradient(135deg,#315dd0,#5142b5);border:0}.bubble p{margin:0;line-height:1.5;font-size:14px}.meta{font-size:10px;color:#a7b5ca;margin-top:6px;text-align:right}.typing{color:#8493aa;font-size:12px;padding-left:55px}
+.composer{padding:15px 6%;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}.input{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:#8e9db4}.send{background:linear-gradient(135deg,var(--accent),var(--accent2));border:0;color:#fff;border-radius:12px;padding:13px 19px;font-weight:700}.ai{background:#18233a;color:#d9e4ff;border:1px solid #2b3b59;border-radius:10px;padding:11px 12px}
+.banner{position:absolute;right:28px;bottom:104px;background:#101b2e;border:1px solid #263956;border-radius:15px;padding:13px 15px;box-shadow:0 15px 40px #0006;font-size:12px;color:#b9c7dc}.banner b{color:#fff}
+@media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{display:none}.messages{padding:22px 16px}.composer{padding:12px 14px}.actions .icon:nth-child(2){display:none}.banner{right:14px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">P</div><div><b>Puller Chat</b><small>Real-time communication</small></div></div>
+  <div class="search">⌕ &nbsp; Search conversations</div>
+  <div class="tabs"><button class="tab active">Chats</button><button class="tab">Calls</button></div>
+  <div class="chats">
+    <div class="chat active"><div class="avatar online">AJ</div><div><h4>Alex Johnson</h4><p>Sounds good — talk soon.</p></div><span class="time">9:42</span></div>
+    <div class="chat"><div class="avatar">SM</div><div><h4>Sarah Miller</h4><p>Can you send the file?</p></div><span class="time">8:18</span></div>
+    <div class="chat"><div class="avatar">TD</div><div><h4>Team Design</h4><p>Jordan: New mockups are ready.</p></div><span class="time">Mon</span></div>
+    <div class="chat"><div class="avatar">WC</div><div><h4>Weekend Crew</h4><p>4 members · group chat</p></div><span class="time">Sun</span></div>
+  </div>
+  <div class="profile"><div class="avatar">Y</div><div><b style="font-size:13px">Your profile</b><small style="display:block;color:var(--green);font-size:11px">● Online</small></div><span class="gear">⚙</span></div>
+</aside>
+<main class="main">
+  <header class="header"><div class="avatar" style="width:42px;height:42px">AJ</div><div><h3>Alex Johnson</h3><small>● Online now</small></div><div class="actions"><button class="icon">⌕</button><button class="icon">☎</button><button class="icon">▣</button><button class="icon">⋯</button></div></header>
+  <section class="messages"><div class="day">TODAY</div>
+    <div class="row"><div class="avatar" style="width:34px;height:34px;font-size:11px">AJ</div><div class="bubble"><p>Hey! I just finished the first version of the project. What do you think?</p><div class="meta">9:37 AM</div></div></div>
+    <div class="row me"><div class="bubble"><p>It looks great. The new layout feels much cleaner. Let's keep this direction.</p><div class="meta">9:39 AM ✓✓</div></div></div>
+    <div class="row"><div class="avatar" style="width:34px;height:34px;font-size:11px">AJ</div><div class="bubble"><p>Perfect. I'll make the final adjustments and send them over.</p><div class="meta">9:41 AM</div></div></div>
+    <div class="row me"><div class="bubble"><p>Sounds good — talk soon.</p><div class="meta">9:42 AM ✓✓</div></div></div>
+    <div class="typing">Alex is typing…</div>
+  </section>
+  <footer class="composer"><button class="icon">＋</button><div class="input">Write a message…</div><button class="ai">✦ AI</button><button class="icon">☺</button><button class="send">Send</button></footer>
+</main>
+</div>
+<div class="banner"><b>Puller Chat</b> · live UI preview<br>Messaging · Voice · Video · AI Copilot</div>
+</body>
+</html>
