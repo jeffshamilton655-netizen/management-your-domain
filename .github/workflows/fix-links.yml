@@ -14,29 +14,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Restore intended link destinations
         run: |
+          set -e
           python3 - <<'PY'
           from pathlib import Path
-          import re, html
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          nav={'Skip to content':'#main','MANAGEMENT':'#home','Home':'#home','About the Artist':'#about','Media / Gallery':'#media','Explore':'#explore','Management':'#management','Contact':'#contact'}
-          ext={'Spotify':'https://open.spotify.com/','YouTube Music':'https://music.youtube.com/','Apple Music':'https://www.apple.com/apple-music/','SoundCloud':'https://soundcloud.com/','Billboard':'https://www.billboard.com/','Rolling Stone':'https://www.rollingstone.com/music/','Pitchfork':'https://pitchfork.com/news/','Variety':'https://variety.com/v/music/','Entertainment Tonight':'https://www.etonline.com/','People':'https://people.com/','Entertainment Weekly':'https://ew.com/','E! News':'https://www.eonline.com/','Hollywood Reporter':'https://www.hollywoodreporter.com/','NTA Entertainment':'https://www.nta.ng/news/entertainment/'}
-          def fix(m):
-              before, attrs, inner = m.group(1), m.group(2), m.group(3)
-              text=re.sub(r'<[^>]+>',' ',inner)
-              text=' '.join(html.unescape(text).split())
-              dest=None; external=False
-              for k,v in nav.items():
-                  if text==k: dest=v; break
-              if dest is None:
-                  for k,v in ext.items():
-                      if k in text: dest=v; external=True; break
-              if dest is None: return m.group(0)
-              if external:
-                  if 'target=' not in attrs: attrs += ' target="_blank"'
-                  if 'rel=' not in attrs: attrs += ' rel="noopener noreferrer"'
-              return before+attrs+'>'+inner+'</a>'
-          s=re.sub(r'(<a\b[^>]*?href=")mailto:managementyourdomain@hotmail.com("([^>]*)>)((?:.|\n)*?)</a>', lambda m: fix(type('M',(),{'group':lambda self,i: {1:m.group(1),2:m.group(3),3:m.group(4)}[i]})()), s, flags=re.I)
+          mail='href="mailto:managementyourdomain@hotmail.com"'
+          nav=['#main','#home','#home','#about','#media','#explore','#management','#contact']
+          ext=['https://open.spotify.com/','https://music.youtube.com/','https://www.apple.com/apple-music/','https://soundcloud.com/','https://www.billboard.com/','https://www.rollingstone.com/music/','https://pitchfork.com/news/','https://variety.com/v/music/','https://www.etonline.com/','https://people.com/','https://ew.com/','https://www.eonline.com/','https://www.hollywoodreporter.com/','https://www.nta.ng/news/entertainment/']
+          for url in nav+ext:
+              s=s.replace(mail,'href="'+url+'"',1)
           p.write_text(s,encoding='utf-8')
           PY
       - name: Commit link fix
